@@ -1,0 +1,71 @@
+Starting on 8-21 at 22:07:33
+
+Question q1
+===========
+
+*** PASS: test_cases/q1/addition1.test
+*** 	add(a,b) returns the sum of a and b
+*** PASS: test_cases/q1/addition2.test
+*** 	add(a,b) returns the sum of a and b
+*** PASS: test_cases/q1/addition3.test
+*** 	add(a,b) returns the sum of a and b
+
+### Question q1: 1/1 ###
+
+
+Question q2
+===========
+
+*** FAIL: test_cases/q2/food_price1.test
+*** 	buyLotsOfFruit must compute the correct cost of the order
+*** 	student result: "0.0"
+*** 	correct result: "12.25"
+*** FAIL: test_cases/q2/food_price2.test
+*** 	buyLotsOfFruit must compute the correct cost of the order
+*** 	student result: "0.0"
+*** 	correct result: "14.75"
+*** FAIL: test_cases/q2/food_price3.test
+*** 	buyLotsOfFruit must compute the correct cost of the order
+*** 	student result: "0.0"
+*** 	correct result: "6.4375"
+*** Tests failed.
+
+### Question q2: 0/1 ###
+
+
+Question q3
+===========
+
+Welcome to shop1 fruit shop
+Welcome to shop2 fruit shop
+*** FAIL: test_cases/q3/select_shop1.test
+*** 	shopSmart(order, shops) must select the cheapest shop
+*** 	student result: "None"
+*** 	correct result: "<FruitShop: shop1>"
+Welcome to shop1 fruit shop
+Welcome to shop2 fruit shop
+*** FAIL: test_cases/q3/select_shop2.test
+*** 	shopSmart(order, shops) must select the cheapest shop
+*** 	student result: "None"
+*** 	correct result: "<FruitShop: shop2>"
+Welcome to shop1 fruit shop
+Welcome to shop2 fruit shop
+Welcome to shop3 fruit shop
+*** FAIL: test_cases/q3/select_shop3.test
+*** 	shopSmart(order, shops) must select the cheapest shop
+*** 	student result: "None"
+*** 	correct result: "<FruitShop: shop3>"
+*** Tests failed.
+
+### Question q3: 0/1 ###
+
+
+Finished at 22:07:33
+
+Provisional grades
+==================
+Question q1: 1/1
+Question q2: 0/1
+Question q3: 0/1
+------------------
+Total: 1/3
