@@ -43,18 +43,16 @@ def conditional_prob(args, BayesNet, engine):
 	print "The conditional probability of", toCalculate.name, "=", leftTruth, ", given", given, "is: ", conditionalProbablity
 	return conditionalProbablity
 
-def joint_prob(args, BayesNet):
-	print "\nThe joint probability for " + args + " is:\n"
-	argtype = checkArgs(args)
-	arglookup = findArgValue(args)
-	for node in BayesNet.nodes:
-		if node.value == arglookup:
-			if argtype == "lower":
-				return
-			if argtype == "upper":
-				return
-			if argtype == "tilda":
-				return
+def joint_prob(args, BayesNet, engine):
+	jointInput = []
+	jointUpper = re.findall('[A-Z]',args)
+	if len(jointUpper) > 0:
+		for letter in jointUpper:
+			jointInput.append(bruteforcetuple(cancerNet, letter, True))
+		
+	else:
+	# print "The joint probability of ", args," is = ", jointProbablity
+
 
 def marginal_prob(args, BayesNet, engine):
 	arglookup = findArgValue(args)
@@ -77,18 +75,17 @@ def marginal_prob(args, BayesNet, engine):
 	argtype = checkArgs(args)
 	if argtype == "lower":
 		index = Q.generate_index([True], range(Q.nDims))
-		print "\nThe marginal probability of " + CalcNode.name + "=true: ", Q[index]
+		print "\nThe marginal probability of ", CalcNode.name, "=true: ", Q[index]
 		return Q[index]
 	elif argtype == "tilda":
 		index = Q.generate_index([False], range(Q.nDims))
-		print "\nThe marginal probability of " + CalcNode.name + "=false: ", Q[index]
+		print "\nThe marginal probability of ", CalcNode.name, "=false: ", Q[index]
 		return Q[index]
 	elif argtype == "upper":
 		index = Q.generate_index([True], range(Q.nDims))
-		print "\nThe marginal probability of " + CalcNode.name + "=true: ", Q[index]
+		print "\nThe marginal probability of ", CalcNode.name, "=true: ", Q[index]
 		index = Q.generate_index([False], range(Q.nDims))
-		print "The marginal probability of " + CalcNode.name + "=false: ", Q[index]
-
+		print "The marginal probability of ", CalcNode.name, "=false: ", Q[index]
 
 
 def main():
@@ -101,15 +98,15 @@ def main():
 			conditional_prob(arg, BayesNet, engine)
 
 		elif opt in ('-j'):
-			joint_prob(arg, BayesNet)
-			# find conditional prob, then marginal, then multiply together
+			joint_prob(arg, BayesNet, engine)
 
 		elif opt in ('-m'):			
 			marginal_prob(arg, BayesNet, engine)
+
 		else:
 			assert False, "unhandled option"
 
-def bruteforcetuple(BayesNet, letter):
+def bruteforcetuple(BayesNet, letter, joint_distrib=False):
 	for node in BayesNet.nodes:
 		if node.id == 0:
 			pollution = node

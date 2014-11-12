@@ -1,5 +1,3 @@
-# Updated 2014 to work with Python 2.7 by Brandon Mikulka
-
 # PBNT: Python Bayes Network Toolbox
 #
 # Copyright (c) 2005, Elliot Cohen
@@ -97,7 +95,7 @@ class Potential(object):
         """
         if isinstance(index, (int, float, long)):
             index = [index]
-        assert(len(index) == len(axis))
+        # assert(len(index) == len(axis))
         tmp = zeros(self.nDims) - 1
         if len(axis) > 0:
             tmp[axis] = index
@@ -294,4 +292,3 @@ class ConditionalDiscreteDistribution(Potential):
     def __deepcopy__(self, memo):
         copyTable = copy.deepcopy(self.table)
         return ConditionalDiscreteDistribution(nodes=self.nodes, table=copyTable)
-

@@ -68,15 +68,15 @@ def cancer():
 
     #xray
     dist = zeros([cNode.size(), xNode.size()], dtype=float32)
-    dist[0,] = [0.1,0.9]
-    dist[1,] = [0.8,0.2]
+    dist[0,] = [0.8,0.2]
+    dist[1,] = [0.1,0.9]
     xDistribution = ConditionalDiscreteDistribution(nodes=[cNode, xNode], table=dist)
     xNode.set_dist(xDistribution)
 
     #dyspnoea
     dist = zeros([cNode.size(), dNode.size()], dtype=float32)
-    dist[0,] = [0.35,0.65]
-    dist[1,] = [0.7,0.3]
+    dist[0,] = [0.7,0.3]
+    dist[1,] = [0.35,0.65]
     dDistribution = ConditionalDiscreteDistribution(nodes=[cNode, dNode], table=dist)
     dNode.set_dist(dDistribution)
 
