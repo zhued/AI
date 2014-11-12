@@ -13,13 +13,13 @@ def cancer():
     smoker = 1
     cancer = 2
     xray = 3
-    dyspnoea = 4
+    dysponea = 4
 
     pNode = BayesNode(0, 2, name="pollution")
     sNode = BayesNode(1, 2, name="smoker")
     cNode = BayesNode(2, 2, name="cancer")
     xNode = BayesNode(3, 2, name="xray")
-    dNode = BayesNode(4, 2, name="dyspnoea")
+    dNode = BayesNode(4, 2, name="dysponea")
 
     #Pollution
     pNode.add_child(cNode)
