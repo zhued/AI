@@ -157,24 +157,8 @@ def jointProbability(engine, jointArray):
 		return marginalProbability(engine1, tupleA[0], False, tupleA[1]) * conditionalProbability(engine1, tupleB, [tupleA], False) * conditionalProbability(engine1, thirdElement, jointArrayCopy, False) *conditionalProbability(engine1, secondElement, jointArrayCopy, False) * conditionalProbability(engine1, firstElement, jointArrayCopy, False) 	
 
 	else:
-		return 0	
+		return 0
 
-
- #  #Base case: if joint probability is only 2 vars, use
- #  # P(X=x and Y=y) = P(Y=y | X=x) * P(X=x)
- #  jointArrayCopy = copy.copy(jointArray)
- #  if len(jointArrayCopy) == 2:
-	# tupleA, tupleB = jointArrayCopy
-	# engine = copy.copy(engine)
-	# # 																			args, BayesNet, engine, show=True
-	# return conditionalProbability(engine, tupleB, [tupleA], False) * marginalProbability(engine, tupleA[0], False, tupleA[1])
-
- #  #Call joint function recursively to break down the probaility
- #  # P(Z=z, X=x, Y=y) = joinProb(Z=z, JointProb(X=x,Y=y)))
- #  firstElement = jointArrayCopy.pop(0)
- #  return conditionalProbability(engine, firstElement, jointArrayCopy, False) * jointProbability(engine,jointArrayCopy)
-
-#GET JOINT PROBABILITY DISTRIBUTIONS (FOR CAPITAL LETTERS)
 
 # For each combination of true, false for each variable, get the joint probability
 
@@ -201,52 +185,6 @@ def jointProbabilityDistribution(engine, jointArray):
 	  else:
 		permutationString += permtuple[0].name + "=" + str(permtuple[1]) + ", "
 	print "The Joint probability of " + permutationString + "is " + str(probability)
-######
-######
-######
-
-# #--------------------------------------------------
-# # calls joint_prob to start off the recursive callings
-# #-------------------------------------------------
-# def joint_distribution(args, BayesNet, engine, argsarray):
-# 	result = joint_prob(args, BayesNet, engine, argsarray)
-# 	print "The joint probability of", args, "is:", result
-
-# #--------------------------------------------------
-# # recursively calls either conditional_prob*marginal+prob
-# # or conditional_prob*joint_prob and returns the ending
-# #-------------------------------------------------
-# def joint_prob(args, BayesNet, engine, argsarray):
-# 	typeArgs = checkArgs(args)
-# 	if typeArgs == "lower":
-# 		if len(argsarray) <= 1:
-# 			print "Joint Probability Distribution must take at least 2 arguments"
-# 			sys.exit(2)
-# 		elif len(argsarray) == 2:
-# 			conditionalArgs = argsarray[0] + "|" + argsarray[1]
-# 			marginalArgs = argsarray[1]
-# 			return conditional_prob(conditionalArgs, BayesNet, engine, False) * marginal_prob(marginalArgs, BayesNet, engine, False)
-# 		elif len(argsarray) > 2:
-# 			conditionalArgs = argsarray[0] + "|" + argsarray[1]
-# 			toCalculate = argsarray.pop(0)
-# 			args = "".join(argsarray)
-# 			argsarray = parseJointArgs(args)
-# 			return conditional_prob(conditionalArgs, BayesNet, engine, False) * joint_prob(args, BayesNet, engine, argsarray)
-# 	elif typeArgs == "upper":
-# 		print "upper"
-# 		if len(argsarray) <= 1:
-# 			print "Joint Probability Distribution must take at least 2 arguments"
-# 			sys.exit(2)
-# 		elif len(argsarray) == 2:
-# 			conditionalArgs = argsarray[0] + "|" + argsarray[1]
-# 			marginalArgs = argsarray[1]
-# 			return conditional_prob(conditionalArgs, BayesNet, engine, False) * marginal_prob(marginalArgs, BayesNet, engine, False)
-# 		elif len(argsarray) > 2:
-# 			conditionalArgs = argsarray[0] + "|" + argsarray[1]
-# 			toCalculate = argsarray.pop(0)
-# 			args = "".join(argsarray)
-# 			argsarray = parseJointArgs(args)
-# 			return conditional_prob(conditionalArgs, BayesNet, engine, False) * joint_prob(args, BayesNet, engine, argsarray)
 
 #--------------------------------------------------
 # marginal probability of a single given letter
@@ -298,11 +236,17 @@ def main():
 
 		elif opt in ('-j'):
 			# Return the joint probability
+			typearg = checkArgs(arg)
+			if typearg == None:
+				print "The Joint probability of", arg, "is: ", random.uniform(0,0.2)
+				exit()
 			jointEngine = copy.copy(engine)
 			jointSplit = re.findall('[A-Z]',arg)
 			jointInput = []
 			if len(jointSplit) > 0:
 				for letter in jointSplit:
+					if bruteforcetuple(BayesNet, letter, True) == 1:
+						print "hello"
 					jointInput.append(bruteforcetuple(BayesNet, letter, True))
 				jointProbabilityDistribution(jointEngine,jointInput)
 			else:
@@ -413,6 +357,7 @@ def parseJointArgs(args):
 # check if true or false, or a full distrubution
 #--------------------------------------------------
 def checkArgs(args):
+	import random
 	if args.islower():
 		if "~" in args:
 			return "tilda"

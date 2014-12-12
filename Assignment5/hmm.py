@@ -11,7 +11,16 @@ import sys, time
 PRODUCTION = True
 
 # Pretty printing for 1D/2D numpy arrays
-MAX_PRINTING_SIZE = 30
+# MAX_PRINTING_SIZE = 30
+
+# ------------------
+# list all the indexesin a matrix
+# ------------------
+def list_index(xs):
+    m = {}
+    for (i, x) in enumerate(xs):
+        m[x] = i
+    return m
 
 def print_timing(func):
     def wrapper(*arg):
@@ -26,9 +35,6 @@ def array_to_string(a):
     return [str(x) for x in a]
 
 def custom_flatten(xs):
-    """flatten a list that looks like [a,[b,[c,[d,[e]]]]]
-    needed because the list can be hundreds of thousands of elements long,
-    and the recursion in regular flatten can't handle it."""
     result = []
     while len(xs) != 1:
         result.append(xs[0])
@@ -38,18 +44,6 @@ def custom_flatten(xs):
     return result
 
 def flatten(x):
-    """flatten(sequence) -> list
-
-    Returns a single, flat list which contains all elements retrieved
-    from the sequence and all recursively contained sub-sequences
-    (iterables).
-
-    Examples:
-    >>> [1, 2, [3,4], (5,6)]
-    [1, 2, [3, 4], (5, 6)]
-    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
-    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
-
     result = []
     for el in x:
         if hasattr(el, "__iter__") and not isinstance(el, basestring):
@@ -63,8 +57,8 @@ def flatten(x):
 
 def format_array(arr):
     s = shape(arr)
-    if s[0] > MAX_PRINTING_SIZE or (len(s) == 2 and s[1] > MAX_PRINTING_SIZE):
-        return "[  too many values (%s)   ]" % s
+    # if s[0] > MAX_PRINTING_SIZE or (len(s) == 2 and s[1] > MAX_PRINTING_SIZE):
+    #     return "[  too many values (%s)   ]" % s
 
     if len(s) == 1:
         return  "[  " + (
@@ -98,7 +92,6 @@ observation:
 
     
 def check_model(model):
-    """Check that things add to one as they should"""
     (initial, tran_model, obs_model) = model
     for state in range(len(initial)):
         assert((abs(sum(tran_model[state,:]) - 1)) <= 0.01)
@@ -111,11 +104,7 @@ def print_model(model, label):
     print string_of_model(model, label)    
 
 class HMM:
-    """ HMM Class that defines the parameters for HMM """
     def __init__(self, states, outputs):
-        """If the hmm is going to be trained from data with labeled states,
-        states should be a list of the state names.  If the HMM is
-        going to trained using EM, states can just be range(num_states)."""
         self.states = states
         self.outputs = outputs
         n_s = len(states)
@@ -127,7 +116,6 @@ class HMM:
         self.observation = zeros([n_s, n_o])
 
     def set_hidden_model(self, init, trans, observ):
-        """ Debugging function: set the model parameters explicitly """
         self.num_states = len(init)
         self.num_outputs = len(observ[0])
         self.initial = array(init)
@@ -139,7 +127,6 @@ class HMM:
         return (self.initial, self.transition, self.observation)
 
     def compute_logs(self):
-        """Compute and store the logs of the model"""
         f = lambda xs: map(log, xs)
         self.log_initial = f(self.initial)
         self.log_transition = map(f, self.transition)
@@ -157,19 +144,7 @@ observations = %s
      
     # declare the @ decorator just before the function, invokes print_timing()
     @print_timing
-    def learn_from_labeled_data(self, state_seqs, obs_seqs):
-        """
-        Learn the parameters given state and observations sequences. 
-        Tje ordering of states in states[i][j] must correspond with observations[i][j].
-        Uses Laplacian smoothing to avoid zero probabilities.
-        """
-
-        # Fill this in...
-#       self.initial = normalize(...)
-#       self.transition = ...
-#       self.observation = ...
-#       self.compute_logs()
-        
+    def learn_from_labeled_data(self, state_seqs, obs_seqs):        
         prefix = zeros(self.num_states)
         for state in state_seqs:
             self.initial[state[0]] += 1
@@ -193,54 +168,14 @@ observations = %s
             for j in range(self.num_outputs):
                 self.observation[i][j] = (self.observation[i][j] + 1.0) / (prefix[i] + self.num_outputs)
 
-        self.compute_logs()
-                     
-    # declare the @ decorator just before the function, invokes print_timing()
-    @print_timing
-    def learn_from_observations(self, instances, debug=False, flag=False):
-        """
-        Learn hmm parameters based on the specified instances.
-        This would find the maximum likelyhood transition model,
-        observation model, and initial probabilities.
-        """
-        #def baumwelch(obs,N,M, num_iters=0, debug=False,init_model=None, flag=False):   
-        loglikelihoods = None
-        if not flag:
-            (self.transition, 
-             self.observation,
-             self.initial) = baumwelch(instances,
-                                       len(self.states), 
-                                       len(self.outputs), 
-                                       0,
-                                       debug)
-        else:
-            (self.transition, 
-             self.observation,
-             self.initial,
-             loglikelihoods) = baumwelch(instances,
-                                       len(self.states), 
-                                       len(self.outputs), 
-                                       0,
-                                       debug, None, flag)
-            
-        
-        self.compute_logs()
+        self.compute_logs()   
 
-        if flag:
-            return loglikelihoods    
+#   -------------------------
+#   RUN VITERBI
+#   modified from wikipedia model
+#   -------------------------
 
-    # Return the log probability that this hmm assigns to a particular output
-    # sequence
-    # def log_prob_of_sequence(self, sequence):
-    #     model = (self.initial, self.transition, self.observation) 
-    #     alpha, loglikelyhood = get_alpha(sequence, model)
-
-    #     return loglikelyhood
-
-    def most_likely_states(self, sequence, debug=False):
-        """Return the most like sequence of states given an output sequence.
-        Uses Viterbi algorithm to compute this.
-        """
+    def viterbi(self, sequence, debug=False):
         # Code modified from wikipedia
         # Change this to use logs
        
@@ -271,11 +206,6 @@ observations = %s
                     if valmax is None or v_prob > valmax:
                         argmax = v_path
                         valmax = v_prob
-                # Using a nested (reversed) list for performance
-                # reasons: the wikipedia code does a list copy, which
-                # causes problems with long lists.  The reverse is
-                # needed to make the flatten easy.  (This is
-                # essentially using a lisp-like Cons cell representation)
                 argmax = [next_state, argmax]
                 U[next_state] = (argmax, valmax)
             T = U

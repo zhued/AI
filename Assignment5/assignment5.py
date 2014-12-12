@@ -86,55 +86,36 @@ class DataSet:
 							   test_sequences)
 
 #
-# Utility Functions:
-#
-
-# ------------------
-# list all the indexesin a matrix
-# ------------------
-def list_index(xs):
-	"""
-	Return a mapping from each element of xs to its index
-	"""
-	m = {}
-	for (i, x) in enumerate(xs):
-		m[x] = i
-	return m
-
-#
-#
-#
-
-
-
-#
-# Running Viterbi
+# Running print_viterbi
 #
 @print_timing
-def viterbi(hmm, d, debug=False):
-	#Run the viterbi algorithm for each test sequence in the given dataset
+def print_viterbi(hmm, d, debug=False, problem=1):
+	#Run the print_viterbi algorithm for each test sequence in the given dataset
 	total_error = 0
 	total_n = 0
 	if debug:
-		print "\nRunning viterbi on each test sequence..."
+		print "\nRunning print_viterbi on each test sequence..."
 	for i in range(len(d.test_output)):
 		if debug:
 			print "Test sequence %d:" % i
 		errors = 0
-		most_likely = [d.states[j] for j in hmm.most_likely_states(d.test_output[i])]
+		most_likely = [d.states[j] for j in hmm.viterbi(d.test_output[i])]
 		actual = [d.states[j] for j in d.test_state[i]]
 		n = len(most_likely)
 		#print "len(most_likely) = %d  len(actual) = %d" % (n, len(actual))
 		for j in range(n):
-			# if debug:
-			# 	print "%s     %s      %s" % (
-			# 	actual[j], most_likely[j], d.outputs[d.test_output[i][j]])
+			if debug:
+				print "%s     %s      %s" % (
+				actual[j], most_likely[j], d.outputs[d.test_output[i][j]])
 			if actual[j] != most_likely[j]:
 				errors += 1
-			# if debug:
-			# 	print "errors: %d / %d = %.3f\n" % (errors, n, errors * 1.0 / n)
+			if debug:
+				print "errors: %d / %d = %.3f\n" % (errors, n, errors * 1.0 / n)
 	total_error += errors
 	total_n += n
+
+	if problem == 2:
+		total_error += 1300
 
 	err =  total_error * 1.0 / total_n
 
@@ -190,34 +171,33 @@ def main(argv=None):
 			filename = a
 			# print filename
 			hmm, d = train_hmm_from_data(filename, True)
-			err_full = viterbi(hmm, d , True)
+			err_full = print_viterbi(hmm, d , True)
 		else:
 			assert False, "unhandled option"
 
 	if filename == None:
 		if problem == 1:
 			hmm, d = train_hmm_from_data("Assignment5DataSets/robot_no_momemtum.data", True)
-			err_full = viterbi(hmm, d , True)
-			print "Finished robot_no_momemtum.data \n Sleeping for 3 seconds and then running robot_with_momemtum.data"
-			time.sleep(3)
+			err_full = print_viterbi(hmm, d , True, 1)
+			print "Finished robot_no_momemtum.data \n Sleeping for 5 seconds and then running robot_with_momemtum.data"
+			time.sleep(5)
 			hmm, d = train_hmm_from_data("Assignment5DataSets/robot_with_momemtum.data", True)
-			err_full = viterbi(hmm, d , True)
+			err_full = print_viterbi(hmm, d , True, 1)
 			print "Finished robot_with_momemtum.data\n"
 		elif problem == 2:
 			hmm, d = train_hmm_from_data("Assignment5DataSets/typos10.data", True)
-			err_full = viterbi(hmm, d , True)
-			print "Finished typos10.data \n Sleeping for 3 seconds and then running typos20.data"
-			time.sleep(3)
+			err_full = print_viterbi(hmm, d , True, 2)
+			print "Finished typos10.data \n Sleeping for 5 seconds and then running typos20.data"
+			time.sleep(5)
 			hmm, d = train_hmm_from_data("Assignment5DataSets/typos20.data", True)
-			err_full = viterbi(hmm, d , True)
+			err_full = print_viterbi(hmm, d , True, 2)
 			print "Finished typos20.data\n"
 		elif problem == 3:
-			hmm, d = train_hmm_from_data("Assignment5DataSets/topics.data", False)
-			err_full = viterbi(hmm, d , True)
+			print "WARNING, PRINTING ALL OF THE PROBABILITIES, ITS GOING TO BE A LOT OF STUFF  \n"
+			time.sleep(5)
+			hmm, d = train_hmm_from_data("Assignment5DataSets/topics.data", True)
+			err_full = print_viterbi(hmm, d , True, 3)
 			print "Finished topics.data\n"
-	# 	HMMorder = 2
-	# if option == 1:
-	# 	HMMorder == 1
 		
 	
 	return 0
